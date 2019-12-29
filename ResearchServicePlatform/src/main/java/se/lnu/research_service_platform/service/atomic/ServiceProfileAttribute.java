@@ -1,4 +1,5 @@
 package se.lnu.research_service_platform.service.atomic;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,7 +11,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation for setting attributes of service profile
  * @author Yifan Ruan
- * @email  ry222ad@student.lnu.se
+ * @email ry222ad@student.lnu.se
  */
 public @interface ServiceProfileAttribute {
 }

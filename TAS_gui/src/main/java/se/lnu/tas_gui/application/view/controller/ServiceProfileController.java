@@ -541,7 +541,7 @@ public class ServiceProfileController implements Initializable {
                 try {
 
                     FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(MainGui.class.getResource("view/propertyDialog.fxml"));
+                    loader.setLocation(MainGui.class.getResource("/javafx/propertyDialog.fxml"));
                     AnchorPane propertyPane = (AnchorPane) loader.load();
 
                     Stage dialogStage = new Stage();
@@ -554,7 +554,7 @@ public class ServiceProfileController implements Initializable {
                     //controller.setService(tasStart.getService(serviceName));
 
                     Scene dialogScene = new Scene(propertyPane);
-                    dialogScene.getStylesheets().add(MainGui.class.getResource("view/se.lnu.tas_gui.application.css").toExternalForm());
+                    dialogScene.getStylesheets().add(MainGui.class.getResource("/javafx/application.css").toExternalForm());
 
                     dialogStage.initOwner(stage);
                     dialogStage.setScene(dialogScene);

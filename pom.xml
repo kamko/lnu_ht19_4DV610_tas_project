@@ -24,7 +24,7 @@
         <jms-api.version>2.0.1</jms-api.version>
         <xstream.version>1.4.11.1</xstream.version>
         <itextpdf.version>5.5.13.1</itextpdf.version>
-        <activemq.version>5.15.11</activemq.version>
+        <slf4j.version>1.7.30</slf4j.version>
     </properties>
 
     <dependencyManagement>
@@ -60,11 +60,17 @@
                 <version>${itextpdf.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>activemq-all</artifactId>
-                <version>${activemq.version}</version>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

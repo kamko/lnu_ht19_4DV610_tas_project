@@ -1,15 +1,15 @@
 /**
- * 
+ *
  */
 package se.lnu.research_service_platform.service.auxiliary;
 
 /**
- * 
+ *
  * List of parameter definitions for configuring
- * 
+ *
  */
 public class Configuration {
-    
+
     /**
      * Constructor
      * @param multipleThreads use single thread or multiple threads
@@ -23,16 +23,16 @@ public class Configuration {
      * @param sDCacheTimeout  the refresh period for the cache
      * @param sDCacheSize the max cache size
      */
-    public Configuration(boolean multipleThreads, int maxNoOfThreads, int maxQueueSize, int timeout, boolean ignoreTimeoutError,int maxRetryAttempts,boolean sDCacheMode, boolean sDCacheShared, int sDCacheTimeout,
-	    int sDCacheSize) {
-		this(multipleThreads, maxNoOfThreads, maxQueueSize);
-		this.timeout = timeout;
-		this.ignoreTimeoutError = ignoreTimeoutError;
-		this.maxRetryAttempts = maxRetryAttempts;
-		SDCacheMode = sDCacheMode;
-		SDCacheShared = sDCacheShared;
-		SDCacheTimeout = sDCacheTimeout;
-		SDCacheSize = sDCacheSize;
+    public Configuration(boolean multipleThreads, int maxNoOfThreads, int maxQueueSize, int timeout, boolean ignoreTimeoutError, int maxRetryAttempts, boolean sDCacheMode, boolean sDCacheShared, int sDCacheTimeout,
+                         int sDCacheSize) {
+        this(multipleThreads, maxNoOfThreads, maxQueueSize);
+        this.timeout = timeout;
+        this.ignoreTimeoutError = ignoreTimeoutError;
+        this.maxRetryAttempts = maxRetryAttempts;
+        SDCacheMode = sDCacheMode;
+        SDCacheShared = sDCacheShared;
+        SDCacheTimeout = sDCacheTimeout;
+        SDCacheSize = sDCacheSize;
     }
 
     /**
@@ -42,14 +42,14 @@ public class Configuration {
      * @param maxQueueSize the max queue size
      */
     public Configuration(boolean multipleThreads, int maxNoOfThreads, int maxQueueSize) {
-		this.multipleThreads = multipleThreads;
-		this.maxNoOfThreads = maxNoOfThreads;
-		this.maxQueueSize = maxQueueSize;
-		if (maxNoOfThreads == -1 && multipleThreads == true) {
-			maxNoOfThreads = Runtime.getRuntime().availableProcessors();
-		}
+        this.multipleThreads = multipleThreads;
+        this.maxNoOfThreads = maxNoOfThreads;
+        this.maxQueueSize = maxQueueSize;
+        if (maxNoOfThreads == -1 && multipleThreads == true) {
+            maxNoOfThreads = Runtime.getRuntime().availableProcessors();
+        }
     }
-    
+
     public boolean multipleThreads;
     public int maxNoOfThreads;
     public int maxQueueSize;

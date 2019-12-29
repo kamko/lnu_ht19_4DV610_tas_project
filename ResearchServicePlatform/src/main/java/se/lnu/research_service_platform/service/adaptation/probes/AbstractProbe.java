@@ -1,7 +1,8 @@
 /**
- * 
+ *
  */
 package se.lnu.research_service_platform.service.adaptation.probes;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,16 +18,16 @@ public class AbstractProbe<E> {
      * Register a probe 
      * @param e subscriber object
      */
-    public void register(E e){
-    	subscribers.add(e);
+    public void register(E e) {
+        subscribers.add(e);
     }
-    
+
     /**
      * Unregister a probe
      * @param e subscriber object
      */
-    public void unRegister(E e){
-    	subscribers.remove(e);
+    public void unRegister(E e) {
+        subscribers.remove(e);
     }
 
 }

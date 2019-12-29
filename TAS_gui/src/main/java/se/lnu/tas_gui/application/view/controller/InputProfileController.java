@@ -61,43 +61,43 @@ import se.lnu.tas_gui.application.utility.Convert;
 
 public class InputProfileController implements Initializable {
 
-	private Stage stage;
-	
-	@FXML
-	TextArea profileTextArea;
-	
-	@FXML
-	TextField maxStepsTextField;
-	
-	@FXML
-	Label qosRequirementLabel;
-	
-	@FXML
-	ListView<String> variableListView;
-	
-	@FXML
-	TableView<ValueEntry> valueTableView;
-	
-	@FXML
-	TextField dataTextField;
-	
-	@FXML
-	TextField ratioTextField;
-	
-	@FXML
-	Button addValueButton;
-	
-	@FXML
-	Button saveButton1;
-	
-	@FXML
-	Button saveButton2;
-	
-	@FXML
-	TableView<ValueEntry> reqTableView;
-	
-	@FXML
-	ListView<String> reqListView;
+    private Stage stage;
+
+    @FXML
+    TextArea profileTextArea;
+
+    @FXML
+    TextField maxStepsTextField;
+
+    @FXML
+    Label qosRequirementLabel;
+
+    @FXML
+    ListView<String> variableListView;
+
+    @FXML
+    TableView<ValueEntry> valueTableView;
+
+    @FXML
+    TextField dataTextField;
+
+    @FXML
+    TextField ratioTextField;
+
+    @FXML
+    Button addValueButton;
+
+    @FXML
+    Button saveButton1;
+
+    @FXML
+    Button saveButton2;
+
+    @FXML
+    TableView<ValueEntry> reqTableView;
+
+    @FXML
+    ListView<String> reqListView;
 
     @FXML
     TextField reqInvocationsTextField;
@@ -107,26 +107,26 @@ public class InputProfileController implements Initializable {
 
     @FXML
     Button addReqValueButton;
-	
-	ObservableList<ValueEntry> valueData = FXCollections.observableArrayList();
-	ObservableList<ValueEntry> reqData = FXCollections.observableArrayList();
-	InputProfileVariable currentVariable=null;
-	Requirement currentReq=null;
 
-	
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		initializeValueTable();
-		initializeReqTable();
-	}
+    ObservableList<ValueEntry> valueData = FXCollections.observableArrayList();
+    ObservableList<ValueEntry> reqData = FXCollections.observableArrayList();
+    InputProfileVariable currentVariable = null;
+    Requirement currentReq = null;
 
-	public void setStage(Stage stage){
-		this.stage=stage;
-	}
-	
 
-	private void initializeReqTable(){
-		reqTableView.setEditable(true);
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        initializeValueTable();
+        initializeReqTable();
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+
+    private void initializeReqTable() {
+        reqTableView.setEditable(true);
 
         Callback<TableColumn<ValueEntry, String>, TableCell<ValueEntry, String>> cellFactory =
                 new Callback<TableColumn<ValueEntry, String>, TableCell<ValueEntry, String>>() {
@@ -156,190 +156,190 @@ public class InputProfileController implements Initializable {
                     }
                 }
         );
-		
-		TableColumn<ValueEntry,String> nameColumn = new TableColumn<ValueEntry,String>("Value");
-		nameColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("name"));
+
+        TableColumn<ValueEntry, String> nameColumn = new TableColumn<ValueEntry, String>("Value");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("name"));
         nameColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
-			
-		TableColumn<ValueEntry,String> typeColumn = new TableColumn<ValueEntry,String>("Type");
-		typeColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("type"));
+
+        TableColumn<ValueEntry, String> typeColumn = new TableColumn<ValueEntry, String>("Type");
+        typeColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("type"));
         typeColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
 
-	        
-		TableColumn<ValueEntry,String> dataColumn = new TableColumn<ValueEntry,String>("Data");
-		dataColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("data"));
+
+        TableColumn<ValueEntry, String> dataColumn = new TableColumn<ValueEntry, String>("Data");
+        dataColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("data"));
         dataColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
-		dataColumn.setCellFactory(cellFactory);		
+        dataColumn.setCellFactory(cellFactory);
 
-		
-		dataColumn.setOnEditCommit(
-				new EventHandler<CellEditEvent<ValueEntry, String>>() {
-	                    @Override
-	                    public void handle(CellEditEvent<ValueEntry, String> t) {
-	                    	ValueEntry value=(ValueEntry) t.getTableView().getItems().get(
-	                                t.getTablePosition().getRow());
-	                    	
-	                    	String data= t.getNewValue();
-                            int invocations = Integer.parseInt(value.getInvocations());
-	                    	if(data!=null){
-                                currentReq.addValue(invocations, data);
-	                    	}
-	                    }
-	                }
-	        );
-			
-		reqTableView.setItems(reqData);
+
+        dataColumn.setOnEditCommit(
+                new EventHandler<CellEditEvent<ValueEntry, String>>() {
+                    @Override
+                    public void handle(CellEditEvent<ValueEntry, String> t) {
+                        ValueEntry value = (ValueEntry) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow());
+
+                        String data = t.getNewValue();
+                        int invocations = Integer.parseInt(value.getInvocations());
+                        if (data != null) {
+                            currentReq.addValue(invocations, data);
+                        }
+                    }
+                }
+        );
+
+        reqTableView.setItems(reqData);
         reqTableView.getColumns().addAll(invocationsColumn, nameColumn, typeColumn, dataColumn);
-	}
-	
-	private void initializeValueTable(){
-		
-		valueTableView.setEditable(true);
-           
-		TableColumn<ValueEntry,String> nameColumn = new TableColumn<ValueEntry,String>("Value");
-		nameColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("name"));
-		nameColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
-			
-		TableColumn<ValueEntry,String> typeColumn = new TableColumn<ValueEntry,String>("Type");
-		typeColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("type"));
-		typeColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
+    }
 
-	    Callback<TableColumn<ValueEntry, String>, TableCell<ValueEntry, String>> cellFactory =
-	    		new Callback<TableColumn<ValueEntry, String>, TableCell<ValueEntry, String>>() {
-	    			public TableCell<ValueEntry, String> call(TableColumn<ValueEntry, String> p) {
-	    					return new EditingCell();
-	                }
-	        };
-	        
-		TableColumn<ValueEntry,String> valueColumn = new TableColumn<ValueEntry,String>("Data");
-		valueColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("data"));
-		valueColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
-		valueColumn.setCellFactory(cellFactory);		
+    private void initializeValueTable() {
 
-		
-		valueColumn.setOnEditCommit(
-				new EventHandler<CellEditEvent<ValueEntry, String>>() {
-	                    @Override
-	                    public void handle(CellEditEvent<ValueEntry, String> t) {
-	                    	ValueEntry value=(ValueEntry) t.getTableView().getItems().get(
-	                                t.getTablePosition().getRow());
-	                    	//attribute.setValue(t.getNewValue());
-	                    	
-	                    	Object data= value.getRealData(t.getNewValue());
-	                    	if(data!=null){
-		                    	value.getProfileValue().setData(data);
-	                    	}
-	                    }
-	                }
-	        );
-		
-		TableColumn<ValueEntry,String> ratioColumn = new TableColumn<ValueEntry,String>("Ratio");
-		ratioColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("ratio"));
-		ratioColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
-		ratioColumn.setCellFactory(cellFactory);
-		
-		ratioColumn.setOnEditCommit(
-				new EventHandler<CellEditEvent<ValueEntry, String>>() {
-	                    @Override
-	                    public void handle(CellEditEvent<ValueEntry, String> t) {
-	                    	ValueEntry value=(ValueEntry) t.getTableView().getItems().get(
-	                                t.getTablePosition().getRow());
-	                    	double ratio=Double.parseDouble(t.getNewValue());
-	                    	value.getProfileValue().setRatio(ratio);
-	                    }
-	                }
-	        );
-			
-		valueTableView.setItems(valueData);
-		valueTableView.getColumns().addAll(nameColumn,typeColumn,valueColumn,ratioColumn);
-	}
+        valueTableView.setEditable(true);
 
-	public void viewProfile(String filePath){
-		try{
-			String content = new String(Files.readAllBytes(Paths.get(filePath)));
-			
-	        Source xmlInput = new StreamSource(new StringReader(content));
-	        StringWriter stringWriter = new StringWriter();
-	        StreamResult xmlOutput = new StreamResult(stringWriter);
-	        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-	        transformerFactory.setAttribute("indent-number", 5);
-	        Transformer transformer = transformerFactory.newTransformer(); 
-	        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-	        transformer.transform(xmlInput, xmlOutput);	        
-			profileTextArea.setText(xmlOutput.getWriter().toString());
-			
-			stage.setOnCloseRequest(event -> {
-			});
-			
-			
-			saveButton1.setOnAction(event->{
-				String newContent = profileTextArea.getText();
-				try {
-					PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
-					out.write(newContent);
-					out.flush();
-					out.close();
-					stage.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-			
-			ProfileExecutor.readFromXml(filePath);
-			
-			InputProfile profile=ProfileExecutor.profile;
-			maxStepsTextField.setText(profile.getMaxSteps()+"");
-			maxStepsTextField.textProperty().addListener(new ChangeListener<String>() {
-			    @Override
-			    public void changed(ObservableValue<? extends String> observable,
-			            String oldValue, String newValue) {
-			    	profile.setMaxSteps(Integer.parseInt(newValue));
-			    }
-			});
-			
-			qosRequirementLabel.setText(profile.getQosRequirement());
+        TableColumn<ValueEntry, String> nameColumn = new TableColumn<ValueEntry, String>("Value");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("name"));
+        nameColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
 
-			
-			variableListView.getItems().addAll(profile.getVariableNames());
-			variableListView.getSelectionModel().selectedItemProperty().addListener(
-	                new ChangeListener<String>() {
-	                    public void changed(ObservableValue<? extends String> val, 
-	                        String oldVal, String newVal) {
-	                    	
-	                    	valueData.clear();
-	                    	
-	                    	currentVariable=profile.getVariable(newVal);
-	                    	List<InputProfileValue> values=currentVariable.getValues();
-	                    	for(int i=0;i<values.size();i++){
-	                    		InputProfileValue value=values.get(i);
-	                    		valueData.add(new ValueEntry("value "+i,value.getData().getClass().getSimpleName(),
-	                    				value.getData().toString(),String.valueOf(value.getRatio()),value));
-	                    	}
-	                    	String type=values.get(0).getData().getClass().getSimpleName();
-	                    	addValueButton.setDisable(false);
-	                    	addValueButton.setOnAction(event->{
-	                    		InputProfileValue newValue=new InputProfileValue(Convert.toObject(type, dataTextField.getText()),
-	                    				Double.parseDouble(ratioTextField.getText()));
-	                    		currentVariable.getValues().add(newValue);
-	                    		valueData.add(new ValueEntry("value "+valueData.size(),newValue.getData().getClass().getSimpleName(),
-	                    				newValue.getData().toString(),String.valueOf(newValue.getRatio()),newValue));
-	                    		
-	                    		dataTextField.clear();
-	                    		ratioTextField.clear();
-	                    		
-	                    	});
-	                    	
-	                }
-	            });
-			
-			
-			reqListView.getItems().addAll(profile.getRequirementNames());
-			reqListView.getSelectionModel().selectedItemProperty().addListener(
-	                new ChangeListener<String>() {
-	                    public void changed(ObservableValue<? extends String> val, 
-	                        String oldVal, String newVal) {
-	                    	reqData.clear();               	
-	                    	currentReq=profile.getRequirement(newVal);
+        TableColumn<ValueEntry, String> typeColumn = new TableColumn<ValueEntry, String>("Type");
+        typeColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("type"));
+        typeColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
+
+        Callback<TableColumn<ValueEntry, String>, TableCell<ValueEntry, String>> cellFactory =
+                new Callback<TableColumn<ValueEntry, String>, TableCell<ValueEntry, String>>() {
+                    public TableCell<ValueEntry, String> call(TableColumn<ValueEntry, String> p) {
+                        return new EditingCell();
+                    }
+                };
+
+        TableColumn<ValueEntry, String> valueColumn = new TableColumn<ValueEntry, String>("Data");
+        valueColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("data"));
+        valueColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
+        valueColumn.setCellFactory(cellFactory);
+
+
+        valueColumn.setOnEditCommit(
+                new EventHandler<CellEditEvent<ValueEntry, String>>() {
+                    @Override
+                    public void handle(CellEditEvent<ValueEntry, String> t) {
+                        ValueEntry value = (ValueEntry) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow());
+                        //attribute.setValue(t.getNewValue());
+
+                        Object data = value.getRealData(t.getNewValue());
+                        if (data != null) {
+                            value.getProfileValue().setData(data);
+                        }
+                    }
+                }
+        );
+
+        TableColumn<ValueEntry, String> ratioColumn = new TableColumn<ValueEntry, String>("Ratio");
+        ratioColumn.setCellValueFactory(new PropertyValueFactory<ValueEntry, String>("ratio"));
+        ratioColumn.prefWidthProperty().bind(valueTableView.widthProperty().divide(4));
+        ratioColumn.setCellFactory(cellFactory);
+
+        ratioColumn.setOnEditCommit(
+                new EventHandler<CellEditEvent<ValueEntry, String>>() {
+                    @Override
+                    public void handle(CellEditEvent<ValueEntry, String> t) {
+                        ValueEntry value = (ValueEntry) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow());
+                        double ratio = Double.parseDouble(t.getNewValue());
+                        value.getProfileValue().setRatio(ratio);
+                    }
+                }
+        );
+
+        valueTableView.setItems(valueData);
+        valueTableView.getColumns().addAll(nameColumn, typeColumn, valueColumn, ratioColumn);
+    }
+
+    public void viewProfile(String filePath) {
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filePath)));
+
+            Source xmlInput = new StreamSource(new StringReader(content));
+            StringWriter stringWriter = new StringWriter();
+            StreamResult xmlOutput = new StreamResult(stringWriter);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute("indent-number", 5);
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(xmlInput, xmlOutput);
+            profileTextArea.setText(xmlOutput.getWriter().toString());
+
+            stage.setOnCloseRequest(event -> {
+            });
+
+
+            saveButton1.setOnAction(event -> {
+                String newContent = profileTextArea.getText();
+                try {
+                    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, false)));
+                    out.write(newContent);
+                    out.flush();
+                    out.close();
+                    stage.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            ProfileExecutor.readFromXml(filePath);
+
+            InputProfile profile = ProfileExecutor.profile;
+            maxStepsTextField.setText(profile.getMaxSteps() + "");
+            maxStepsTextField.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable,
+                                    String oldValue, String newValue) {
+                    profile.setMaxSteps(Integer.parseInt(newValue));
+                }
+            });
+
+            qosRequirementLabel.setText(profile.getQosRequirement());
+
+
+            variableListView.getItems().addAll(profile.getVariableNames());
+            variableListView.getSelectionModel().selectedItemProperty().addListener(
+                    new ChangeListener<String>() {
+                        public void changed(ObservableValue<? extends String> val,
+                                            String oldVal, String newVal) {
+
+                            valueData.clear();
+
+                            currentVariable = profile.getVariable(newVal);
+                            List<InputProfileValue> values = currentVariable.getValues();
+                            for (int i = 0; i < values.size(); i++) {
+                                InputProfileValue value = values.get(i);
+                                valueData.add(new ValueEntry("value " + i, value.getData().getClass().getSimpleName(),
+                                        value.getData().toString(), String.valueOf(value.getRatio()), value));
+                            }
+                            String type = values.get(0).getData().getClass().getSimpleName();
+                            addValueButton.setDisable(false);
+                            addValueButton.setOnAction(event -> {
+                                InputProfileValue newValue = new InputProfileValue(Convert.toObject(type, dataTextField.getText()),
+                                        Double.parseDouble(ratioTextField.getText()));
+                                currentVariable.getValues().add(newValue);
+                                valueData.add(new ValueEntry("value " + valueData.size(), newValue.getData().getClass().getSimpleName(),
+                                        newValue.getData().toString(), String.valueOf(newValue.getRatio()), newValue));
+
+                                dataTextField.clear();
+                                ratioTextField.clear();
+
+                            });
+
+                        }
+                    });
+
+
+            reqListView.getItems().addAll(profile.getRequirementNames());
+            reqListView.getSelectionModel().selectedItemProperty().addListener(
+                    new ChangeListener<String>() {
+                        public void changed(ObservableValue<? extends String> val,
+                                            String oldVal, String newVal) {
+                            reqData.clear();
+                            currentReq = profile.getRequirement(newVal);
                             String name = currentReq.getName();
                             String type = currentReq.getType();
                             TreeMap<Integer, String> values = currentReq.getValues();
@@ -358,89 +358,88 @@ public class InputProfileController implements Initializable {
                                 reqInvocationsTextField.clear();
                                 reqDataTextField.clear();
                             });
-	                    	
-	                }
-	            });
+
+                        }
+                    });
 
 
-            saveButton2.setOnAction(event->{
-				ProfileExecutor.writeToXml(filePath);
-				stage.close();
-			});
-			
-			
-			ContextMenu contextMenu = new ContextMenu();
-			MenuItem item = new MenuItem("Add new Requirement");
-			
-			item.setOnAction(new EventHandler<ActionEvent>() {
-			    public void handle(ActionEvent e) {
-			    	
-					Dialog<Void> dialog = new Dialog<>();
-					dialog.setTitle("New Requirement");
-					
-					ButtonType okButtonType = new ButtonType("OK",ButtonData.OK_DONE);
-					dialog.getDialogPane().getButtonTypes().setAll(okButtonType);
+            saveButton2.setOnAction(event -> {
+                ProfileExecutor.writeToXml(filePath);
+                stage.close();
+            });
 
-					GridPane grid = new GridPane();
-					grid.setHgap(10);
-					grid.setVgap(10);
-					grid.setPadding(new Insets(20, 40, 10, 20));
 
-					TextField nameField = new TextField();
-					nameField.setText("");
-					
-					ChoiceBox<String> typeBox=new ChoiceBox<>();
-					typeBox.getItems().addAll("Threshold","Min/Max");
-					typeBox.getSelectionModel().select(0);
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem item = new MenuItem("Add new Requirement");
 
-					TextField dataField = new TextField();
-					dataField.setText("");
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent e) {
 
-					grid.add(new Label("Name: "), 0, 0);
-					grid.add(nameField, 1, 0);
-					grid.add(new Label("Type: "), 0, 1);
-					grid.add(typeBox, 1, 1);
-					grid.add(new Label("Data: "), 0, 2);
-					grid.add(dataField, 1, 2);
-					
+                    Dialog<Void> dialog = new Dialog<>();
+                    dialog.setTitle("New Requirement");
 
-					dialog.getDialogPane().setContent(grid);
-					dialog.setResultConverter(dialogButton -> {
-					    if (dialogButton == okButtonType) {
-					    	
-					    	String name=nameField.getText();
-					    	String type=typeBox.getValue();
-					    	String data=dataField.getText();
-					    	
-					    	//ValueEntry entry=new ValueEntry(name,type,data,null,null);			
-							//reqData.add(entry);
-					    	
-					    	profile.addRequirement(new Requirement(name,type,data));
-					    	reqListView.getItems().add(name);
-							                	
-					    }
-						return null;
-					});
-					
-					dialog.showAndWait();
-			    }
-			});
-			contextMenu.getItems().add(item);
-			reqListView.setContextMenu(contextMenu);
-		}
-		catch(Exception exception){
-			exception.printStackTrace();
-		}
-	}
-	
-	
-	public class ValueEntry{
+                    ButtonType okButtonType = new ButtonType("OK", ButtonData.OK_DONE);
+                    dialog.getDialogPane().getButtonTypes().setAll(okButtonType);
+
+                    GridPane grid = new GridPane();
+                    grid.setHgap(10);
+                    grid.setVgap(10);
+                    grid.setPadding(new Insets(20, 40, 10, 20));
+
+                    TextField nameField = new TextField();
+                    nameField.setText("");
+
+                    ChoiceBox<String> typeBox = new ChoiceBox<>();
+                    typeBox.getItems().addAll("Threshold", "Min/Max");
+                    typeBox.getSelectionModel().select(0);
+
+                    TextField dataField = new TextField();
+                    dataField.setText("");
+
+                    grid.add(new Label("Name: "), 0, 0);
+                    grid.add(nameField, 1, 0);
+                    grid.add(new Label("Type: "), 0, 1);
+                    grid.add(typeBox, 1, 1);
+                    grid.add(new Label("Data: "), 0, 2);
+                    grid.add(dataField, 1, 2);
+
+
+                    dialog.getDialogPane().setContent(grid);
+                    dialog.setResultConverter(dialogButton -> {
+                        if (dialogButton == okButtonType) {
+
+                            String name = nameField.getText();
+                            String type = typeBox.getValue();
+                            String data = dataField.getText();
+
+                            //ValueEntry entry=new ValueEntry(name,type,data,null,null);
+                            //reqData.add(entry);
+
+                            profile.addRequirement(new Requirement(name, type, data));
+                            reqListView.getItems().add(name);
+
+                        }
+                        return null;
+                    });
+
+                    dialog.showAndWait();
+                }
+            });
+            contextMenu.getItems().add(item);
+            reqListView.setContextMenu(contextMenu);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+
+    public class ValueEntry {
         private SimpleStringProperty invocations;
-	    private  SimpleStringProperty name;  
-	    private  SimpleStringProperty type;
-	    private  SimpleStringProperty data;
-	    private  SimpleStringProperty ratio;
-	    private  InputProfileValue profileValue;
+        private SimpleStringProperty name;
+        private SimpleStringProperty type;
+        private SimpleStringProperty data;
+        private SimpleStringProperty ratio;
+        private InputProfileValue profileValue;
 
 
         public ValueEntry(String invocations, String name, String type, String data, String ratio, InputProfileValue profileValue) {
@@ -451,80 +450,74 @@ public class InputProfileController implements Initializable {
             this.ratio = new SimpleStringProperty(ratio);
             this.profileValue = profileValue;
         }
-	    
-	    
-	    public ValueEntry(String name,String type,String data, String ratio,InputProfileValue profileValue){
-	    	this.name=new SimpleStringProperty(name);
-	    	this.type=new SimpleStringProperty(type);
-	    	this.data=new SimpleStringProperty(data);
-	    	this.ratio=new SimpleStringProperty(ratio);
-	    	this.profileValue=profileValue;
-	    }
-	    	    
-	    public InputProfileValue getProfileValue(){
-	    	return this.profileValue;
-	    }
-	    
-	    public void setRatio(String ratio){
-	    	this.ratio=new SimpleStringProperty(ratio);
-	    }
-	    
-	    public Object getRealData(String data){
-	    	this.data=new SimpleStringProperty(data);
-	    	Object realData=null;
-			try {
-				switch (type.get()) {
-				case "boolean": 
-				case "Boolean":
-				{
-					if (data.equals("true"))
-						realData= true;
-					else
-						realData= false;
-					break;
-				}
-				case "short":
-				case "Short":
-				{
-					realData= Short.parseShort(data);
-					break;
-				}
-				case "int": 
-				case "Integer": 
-				{
-					realData= Integer.parseInt(data);
-					break;
-				}
-				case "long": 
-				case "Long": 
-				{
-					realData= Long.parseLong(data);
-					break;
-				}
-				case "float": 
-				case "Float": 
-				{
-					realData= Float.parseFloat(data);
-					break;
-				}
-				case "double":
-				case "Double": 
-				{
-					realData= Double.parseDouble(data);
-					break;
-				}
-				default: {
-					System.out.println("Wrong attribute!!!!");
-					realData=data;
-					break;
-				}
-				}
 
-			} catch (Exception e) {
-				e.printStackTrace();
-			}			
-			return realData;
-	    }
+
+        public ValueEntry(String name, String type, String data, String ratio, InputProfileValue profileValue) {
+            this.name = new SimpleStringProperty(name);
+            this.type = new SimpleStringProperty(type);
+            this.data = new SimpleStringProperty(data);
+            this.ratio = new SimpleStringProperty(ratio);
+            this.profileValue = profileValue;
+        }
+
+        public InputProfileValue getProfileValue() {
+            return this.profileValue;
+        }
+
+        public void setRatio(String ratio) {
+            this.ratio = new SimpleStringProperty(ratio);
+        }
+
+        public Object getRealData(String data) {
+            this.data = new SimpleStringProperty(data);
+            Object realData = null;
+            try {
+                switch (type.get()) {
+                    case "boolean":
+                    case "Boolean": {
+                        if (data.equals("true"))
+                            realData = true;
+                        else
+                            realData = false;
+                        break;
+                    }
+                    case "short":
+                    case "Short": {
+                        realData = Short.parseShort(data);
+                        break;
+                    }
+                    case "int":
+                    case "Integer": {
+                        realData = Integer.parseInt(data);
+                        break;
+                    }
+                    case "long":
+                    case "Long": {
+                        realData = Long.parseLong(data);
+                        break;
+                    }
+                    case "float":
+                    case "Float": {
+                        realData = Float.parseFloat(data);
+                        break;
+                    }
+                    case "double":
+                    case "Double": {
+                        realData = Double.parseDouble(data);
+                        break;
+                    }
+                    default: {
+                        System.out.println("Wrong attribute!!!!");
+                        realData = data;
+                        break;
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return realData;
+        }
 
         public String getInvocations() {
             return this.invocations.get();
@@ -533,92 +526,93 @@ public class InputProfileController implements Initializable {
         public void setInvocations(String invocations) {
             this.invocations = new SimpleStringProperty(invocations);
         }
-	    
-	    public String getName(){
-	    	return this.name.get();
-	    }
-	    
-	    public String getType(){
-	    	return this.type.get();
-	    }
-	    
-	    public String getData(){
-	    	return this.data.get();
-	    }
-	    
-	    public String getRatio(){
-	    	return this.ratio.get();
-	    }
-	}
-	
-	
-	  class EditingCell extends TableCell<ValueEntry, String> {
-		  
-	        private TextField textField;
-	 
-	        public EditingCell() {
-	        }
-	 
-	        @Override
-	        public void startEdit() {
-	            if (!isEmpty()) {
-	                super.startEdit();
-	                createTextField();
-	                setText(null);
-	                setGraphic(textField);
-	                textField.selectAll();
-	            }
-	        }
-	 
-	        @Override
-	        public void cancelEdit() {
-	            super.cancelEdit();
-	 
-	            setText((String) getItem());
-	            setGraphic(null);
-	        }
-	 
-	        @Override
-	        public void updateItem(String item, boolean empty) {
-	            super.updateItem(item, empty);
-	 
-	            if (empty) {
-	                setText(null);
-	                setGraphic(null);
-	            } else {
-	                if (isEditing()) {
-	                    if (textField != null) {
-	                        textField.setText(getString());
-	                    }
-	                    setText(null);
-	                    setGraphic(textField);
-	                } else {
-	                    setText(getString());
-	                    setGraphic(null);
-	                }
-	            }
-	        }
-	        
-	        private void createTextField() {
-	            textField = new TextField(getItem());
-	            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
 
-	            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-	                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-	                    if(!newValue.booleanValue())
-	                        commitEdit(textField.getText());
-	                }
-	            } );
-	            textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
-	                @Override public void handle(KeyEvent t) {
-	                    if (t.getCode() == KeyCode.ENTER) {
-	                        commitEdit(textField.getText());
-	                    } else if (t.getCode() == KeyCode.ESCAPE) {
-	                        cancelEdit();
-	                    }
-	                }
-	            });
-	        }
+        public String getName() {
+            return this.name.get();
+        }
+
+        public String getType() {
+            return this.type.get();
+        }
+
+        public String getData() {
+            return this.data.get();
+        }
+
+        public String getRatio() {
+            return this.ratio.get();
+        }
+    }
+
+
+    class EditingCell extends TableCell<ValueEntry, String> {
+
+        private TextField textField;
+
+        public EditingCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((String) getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            textField = new TextField(getItem());
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+
+            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (!newValue.booleanValue())
+                        commitEdit(textField.getText());
+                }
+            });
+            textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent t) {
+                    if (t.getCode() == KeyCode.ENTER) {
+                        commitEdit(textField.getText());
+                    } else if (t.getCode() == KeyCode.ESCAPE) {
+                        cancelEdit();
+                    }
+                }
+            });
+        }
 	        
 	        /*
 	        private void createTextField() {
@@ -635,10 +629,10 @@ public class InputProfileController implements Initializable {
 	                }
 	            }); 
 	        }*/
-	 
-	        private String getString() {
-	            return getItem() == null ? "" : getItem().toString();
-	        }
-	    }
-	
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
+
 }

@@ -14,7 +14,6 @@ import se.lnu.research_service_platform.taskgraph.TaskGraphInterpreter;
 
 /**
  * Workflow execution of composite service
- * 
  */
 public class WorkflowEngine {
 
@@ -22,45 +21,47 @@ public class WorkflowEngine {
 
     /**
      * Constructor to create workflow engine. Local cache is not supported.
+     *
      * @param service the composite service
      */
     public WorkflowEngine(CompositeService service) {
-    	this.service = service;
+        this.service = service;
     }
 
     /**
      * Execute the workflow with specific QoS requirement and initial parameters
-     * @param workFlow the workflow to be executed
+     *
+     * @param workFlow       the workflow to be executed
      * @param qosRequirement the QoS requirements to be satisfied
-     * @param params   initial parameters for the workflow
+     * @param params         initial parameters for the workflow
      * @return the result after executing the workflow
      */
     public Object executeWorkflow(String workFlow, String qosRequirement, Object... params) {
-		rspLexer lexer;
-		try {
-			lexer = new rspLexer(new ANTLRFileStream(workFlow));
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			rspParser parser = new rspParser(tokens);
+        rspLexer lexer;
+        try {
+            lexer = new rspLexer(new ANTLRFileStream(workFlow));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            rspParser parser = new rspParser(tokens);
 
-			// Get AST root
-			Start start = (Start) parser.start().getTree();
+            // Get AST root
+            Start start = (Start) parser.start().getTree();
 
-			// ASTSymTabVisualizer astVisualizer = new ASTSymTabVisualizer();
-			// astVisualizer.exportGML(workFlow + "_AST", start);
+            // ASTSymTabVisualizer astVisualizer = new ASTSymTabVisualizer();
+            // astVisualizer.exportGML(workFlow + "_AST", start);
 
-			START startGraph = (START) start.getFirst();
-			// TaskGraphVisualizer tgVisualizer = new TaskGraphVisualizer();
-			// tgVisualizer.exportGML(workFlow + "_TaskGraph", startGraph);
+            START startGraph = (START) start.getFirst();
+            // TaskGraphVisualizer tgVisualizer = new TaskGraphVisualizer();
+            // tgVisualizer.exportGML(workFlow + "_TaskGraph", startGraph);
 
-			TaskGraphInterpreter interpreter = new TaskGraphInterpreter();
-			Object value = interpreter.interpret(startGraph, 
-					qosRequirement, service, params);
+            TaskGraphInterpreter interpreter = new TaskGraphInterpreter();
+            Object value = interpreter.interpret(startGraph,
+                    qosRequirement, service, params);
             //System.out.println("Result:" + value);
-			return value;
-		} catch (IOException | RecognitionException e) {
-			e.printStackTrace();
-			return null;
-		}
+            return value;
+        } catch (IOException | RecognitionException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

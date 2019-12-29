@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package se.lnu.research_service_platform.service.utility;
 
@@ -11,24 +11,24 @@ import se.lnu.research_service_platform.service.atomic.ServiceProfile;
  * @author Yifan Ruan (ry222ad@student.lnu.se)
  *
  */
-public class LogAtomicService extends ServiceProfile {    
-    
-	/**
-	 * 
-	 */
-	public boolean preInvokeOperation(String operationName, Object... args) {
-		System.out.println("Operation: " + operationName);
-		System.out.println("Arguments: " + Arrays.toString(args));
-		return true;
+public class LogAtomicService extends ServiceProfile {
+
+    /**
+     *
+     */
+    public boolean preInvokeOperation(String operationName, Object... args) {
+        System.out.println("Operation: " + operationName);
+        System.out.println("Arguments: " + Arrays.toString(args));
+        return true;
     }
 
-	/**
-	 * 
-	 */
+    /**
+     *
+     */
     public Object postInvokeOperation(String operationName, Object result, Object... args) {
-    	System.out.println("Operation: " + operationName);
-    	System.out.println("Result: " + result.toString());
-    	System.out.println("Arguments: " + Arrays.toString(args));
-    	return result;
+        System.out.println("Operation: " + operationName);
+        System.out.println("Result: " + result.toString());
+        System.out.println("Arguments: " + Arrays.toString(args));
+        return result;
     }
 }

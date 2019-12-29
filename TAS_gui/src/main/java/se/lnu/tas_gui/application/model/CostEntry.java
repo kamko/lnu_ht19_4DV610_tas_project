@@ -11,41 +11,41 @@ public class CostEntry {
     private SimpleStringProperty service;
     private SimpleIntegerProperty invocationNum;
     private SimpleDoubleProperty totalCost;
-    
-    public CostEntry(String service){
-    	this.service=new SimpleStringProperty(service);
-    	this.invocationNum=new SimpleIntegerProperty(0);
-    	this.totalCost=new SimpleDoubleProperty(0);
-    }
-    
-    public CostEntry(String service,int invocationNum, double totalCost){
-    	this.service=new SimpleStringProperty(service);
-    	this.invocationNum = new SimpleIntegerProperty(invocationNum);
-    	this.totalCost=new SimpleDoubleProperty(totalCost);
+
+    public CostEntry(String service) {
+        this.service = new SimpleStringProperty(service);
+        this.invocationNum = new SimpleIntegerProperty(0);
+        this.totalCost = new SimpleDoubleProperty(0);
     }
 
-	public String getService() {
-		return service.get();
-	}
+    public CostEntry(String service, int invocationNum, double totalCost) {
+        this.service = new SimpleStringProperty(service);
+        this.invocationNum = new SimpleIntegerProperty(invocationNum);
+        this.totalCost = new SimpleDoubleProperty(totalCost);
+    }
 
-	public void setService(String service) {
-    	this.service=new SimpleStringProperty(service);
-	}
+    public String getService() {
+        return service.get();
+    }
 
-	public int getInvocationNum() {
-		return invocationNum.get();
-	}
+    public void setService(String service) {
+        this.service = new SimpleStringProperty(service);
+    }
 
-	public void setInvocationNum(int invocationNum) {
-		this.invocationNum = new SimpleIntegerProperty(invocationNum);
-	}
+    public int getInvocationNum() {
+        return invocationNum.get();
+    }
 
-	public double getTotalCost() {
-	    return totalCost.get();
-	}
+    public void setInvocationNum(int invocationNum) {
+        this.invocationNum = new SimpleIntegerProperty(invocationNum);
+    }
 
-	public void setTotalCost(double totalCost) {
-	    BigDecimal bd = new  BigDecimal(totalCost); 
-	    this.totalCost=new SimpleDoubleProperty(bd.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
-	}
+    public double getTotalCost() {
+        return totalCost.get();
+    }
+
+    public void setTotalCost(double totalCost) {
+        BigDecimal bd = new BigDecimal(totalCost);
+        this.totalCost = new SimpleDoubleProperty(bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+    }
 }
