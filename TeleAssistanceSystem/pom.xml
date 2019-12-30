@@ -6,11 +6,11 @@
 
     <parent>
         <groupId>se.lnu</groupId>
-        <artifactId>tas_project</artifactId>
+        <artifactId>tas-project</artifactId>
         <version>1.62</version>
     </parent>
 
-    <artifactId>tas_system</artifactId>
+    <artifactId>tas-system</artifactId>
     <version>1.62</version>
 
     <dependencies>
@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>se.lnu</groupId>
-            <artifactId>research_service_platform</artifactId>
+            <artifactId>research-service-platform</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

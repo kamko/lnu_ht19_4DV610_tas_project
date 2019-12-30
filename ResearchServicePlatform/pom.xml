@@ -10,7 +10,7 @@
         <version>1.62</version>
     </parent>
 
-    <artifactId>research_service_platform</artifactId>
+    <artifactId>research-service-platform</artifactId>
     <version>1.62</version>
 
     <dependencies>
