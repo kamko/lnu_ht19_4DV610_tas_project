@@ -13,6 +13,7 @@
         <module>ResearchServicePlatform</module>
         <module>TAS_gui</module>
         <module>TeleAssistanceSystem</module>
+        <module>self-adaptation</module>
     </modules>
 
     <properties>
