@@ -4,13 +4,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.provider.MessageReceiver;
 import se.lnu.research_service_platform.service.provider.ServiceProvider;
 import se.lnu.research_service_platform.service.provider.ServiceProviderFactory;
@@ -22,6 +23,8 @@ import se.lnu.research_service_platform.service.utility.SimClock;
  */
 public abstract class AbstractService implements MessageReceiver {
 
+    private static final Logger log = LoggerFactory.getLogger(AbstractService.class);
+
     //private String serviceName;
     private String endpoint;
     private ServiceProvider serviceProvider;
@@ -32,7 +35,6 @@ public abstract class AbstractService implements MessageReceiver {
     private Object NullObject = new Object();
     private ExecutorService executors;
 
-    public static final boolean DEBUG = false;
 
     /**
      * Constructor
@@ -93,8 +95,7 @@ public abstract class AbstractService implements MessageReceiver {
             Request request = new Request(messageID, this.endpoint, service, opName, params);
             serviceProvider.sendMessage(request, destination);
 
-            if (DEBUG)
-                System.out.println("The request message is: \n" + request.getId());
+            log.debug("The request message is: {}", request.getId());
 
             if (reply) {
                 synchronized (this) {
@@ -123,7 +124,7 @@ public abstract class AbstractService implements MessageReceiver {
             }
             return null;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error", e);
             return null;
         }
     }
@@ -163,8 +164,7 @@ public abstract class AbstractService implements MessageReceiver {
             final String destination = msg.getEndpoint();
             switch (messageType) {
                 case "request": {
-                    if (DEBUG)
-                        System.out.println("Receiving the request: \n" + msg.getId());
+                    log.debug("Receiving the request: {}", msg.getId());
                     final Request request = (Request) msg;
 				
 				
@@ -192,23 +192,19 @@ public abstract class AbstractService implements MessageReceiver {
 
                     Thread thread = Thread.currentThread();
 
-                    FutureTask<Object> future = new FutureTask<Object>(new Callable<Object>() {
+                    FutureTask<Object> future = new FutureTask<>(() -> {
+                        try {
 
-                        @Override
-                        public Object call() throws Exception {
-                            try {
+                            Object result = invokeOperation(request.getOpName(), request.getParams());
 
-                                Object result = invokeOperation(request.getOpName(), request.getParams());
+                            if (!(result instanceof OperationAborted))
+                                sendResponse(requestID, result, destination);
 
-                                if (!(result instanceof OperationAborted))
-                                    sendResponse(requestID, result, destination);
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            return null;
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
+
+                        return null;
                     });
 
                     if (thread instanceof ExecutionThread)
@@ -219,8 +215,7 @@ public abstract class AbstractService implements MessageReceiver {
                     break;
                 }
                 case "response": {
-                    if (DEBUG)
-                        System.out.println("Receiving the response: \n" + msg.getId());
+                    log.debug("Receiving the response: {}", msg.getId());
                     Response response = (Response) msg;
                     if (response.getReturnType() != null) {
                         Class<?> type = (Class<?>) response.getReturnType();
@@ -237,7 +232,7 @@ public abstract class AbstractService implements MessageReceiver {
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error", e);
         }
     }
 
@@ -256,7 +251,8 @@ public abstract class AbstractService implements MessageReceiver {
     public void register() {
         int registerId = (int) this.sendRequest(ServiceRegistryInterface.NAME, ServiceRegistryInterface.ADDRESS, true, "register", description);
         this.description.setRegisterID(registerId);
-        System.out.println("The service " + description.getServiceType() + " has been registered. The registerID is " + this.description.getRegisterID());
+        log.info("The service {} has been registered. The registerID is {}",
+                description.getServiceType(), description.getRegisterID());
     }
 
     /**
@@ -270,10 +266,11 @@ public abstract class AbstractService implements MessageReceiver {
      * Helps to dynamically update the service description
      */
     public void updateServiceDescription() {
-        if (description.getRegisterID() > 0)
+        if (description.getRegisterID() > 0) {
             this.sendRequest(ServiceRegistryInterface.NAME, ServiceRegistryInterface.ADDRESS, true, "update", this.description);
-        else
-            System.err.println("Service is not registered in the registy yet. It can't be updated.");
+        } else {
+            log.error("Service is not registered in the registy yet. It can't be updated.");
+        }
     }
 
     /**
@@ -323,7 +320,7 @@ public abstract class AbstractService implements MessageReceiver {
     abstract protected void readConfiguration();
 
     protected void applyConfiguration() {
-        if (configuration.multipleThreads == false) {
+        if (!configuration.multipleThreads) {
             executors = Executors.newSingleThreadExecutor();
         } else {
             executors = Executors.newFixedThreadPool(configuration.maxNoOfThreads);

@@ -3,11 +3,12 @@ package se.lnu.research_service_platform.service.registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.atomic.AtomicService;
 import se.lnu.research_service_platform.service.auxiliary.ServiceDescription;
 import se.lnu.research_service_platform.service.auxiliary.ServiceOperation;
@@ -19,6 +20,8 @@ import se.lnu.research_service_platform.service.auxiliary.ServiceRegistryInterfa
  * @author Yifan Ruan (ry222ad@student.lnu.se)
  */
 public class ServiceRegistry extends AtomicService implements ServiceRegistryInterface {
+
+    private static final Logger log = LoggerFactory.getLogger(ServiceRegistry.class);
 
     private HashMap<Integer, ServiceDescription> serviceList = new HashMap<>();
     private Map<String, Set<ServiceDescription>> services = new HashMap<String, Set<ServiceDescription>>();
@@ -53,11 +56,11 @@ public class ServiceRegistry extends AtomicService implements ServiceRegistryInt
         if (services.containsKey(type)) {
             services.get(type).add(description);
         } else {
-            Set<ServiceDescription> set = new HashSet<ServiceDescription>();
+            Set<ServiceDescription> set = new HashSet<>();
             set.add(description);
             services.put(type, set);
         }
-        System.out.println("Service " + description.getServiceType() + " is registered.");
+        log.info("Service {} is registered.", description.getServiceType());
         return serviceCount;
     }
 
@@ -69,18 +72,16 @@ public class ServiceRegistry extends AtomicService implements ServiceRegistryInt
         set.remove(service);
         if (set.size() == 0)
             services.remove(service.getServiceType());
-        System.out.println("Service " + service.getServiceType() + " is registered.");
+        log.info("Service {} is registered.", service.getServiceType());
     }
 
     @ServiceOperation
     public List<ServiceDescription> lookup(String type, String opName) {
-        //System.out.println("Lookup " + type + "." + opName);
-        List<ServiceDescription> list = new ArrayList<ServiceDescription>();
+        log.debug("Lookup {}.{}", type, opName);
+        List<ServiceDescription> list = new ArrayList<>();
         if (services.containsKey(type)) {
             Set<ServiceDescription> set = services.get(type);
-            Iterator<ServiceDescription> iter = set.iterator();
-            while (iter.hasNext()) {
-                ServiceDescription service = iter.next();
+            for (ServiceDescription service : set) {
                 if (service.containsOperation(opName))
                     list.add(service);
             }
@@ -104,8 +105,7 @@ public class ServiceRegistry extends AtomicService implements ServiceRegistryInt
         String type = description.getServiceType();
         int registerID = description.getRegisterID();
 
-        if (serviceList.containsKey(registerID))
-            serviceList.remove(registerID);
+        serviceList.remove(registerID);
 
         if (services.containsKey(type))
             services.get(type).remove(description);
@@ -129,7 +129,7 @@ public class ServiceRegistry extends AtomicService implements ServiceRegistryInt
         Set<ServiceDescription> descriptions = services.get(description.getServiceType());
         descriptions.remove(oldDescription);
         descriptions.add(description);
-        //System.out.println("Update service description");
+        log.debug("Update service description");
     }
 
     public static void main(String[] args) {

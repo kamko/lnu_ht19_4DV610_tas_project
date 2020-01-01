@@ -26,8 +26,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import se.lnu.tas_gui.application.log.Report;
-import se.lnu.tas_system.tas.services.log.Log;
 import se.lnu.tas_system.tas.services.log.LogEntry;
+import se.lnu.tas_system.tas.services.log.UILogger;
 
 
 public class LogController implements Initializable {
@@ -51,7 +51,7 @@ public class LogController implements Initializable {
 
     Stage stage;
 
-    FilteredList<LogEntry> filteredData = new FilteredList<>(Log.logData, p -> true);
+    FilteredList<LogEntry> filteredData = new FilteredList<>(UILogger.logData, p -> true);
 
     private final String pattern = "yyyy-MM-dd";
 
@@ -70,7 +70,7 @@ public class LogController implements Initializable {
 
     private void setButtons() {
         clearButton.setOnAction(event -> {
-            Log.clear();
+            UILogger.clear();
         });
 
 

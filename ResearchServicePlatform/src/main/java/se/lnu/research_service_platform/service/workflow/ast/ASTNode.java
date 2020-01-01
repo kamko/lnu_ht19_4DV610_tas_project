@@ -7,6 +7,8 @@ import java.util.Iterator;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.taskgraph.TaskGraph;
 import se.lnu.research_service_platform.taskgraph.TaskGraph.ARRAY_ACCESS;
 import se.lnu.research_service_platform.taskgraph.TaskGraph.BinaryOp;
@@ -28,12 +30,14 @@ import se.lnu.research_service_platform.taskgraph.TaskGraph.UnaryOp;
 
 public abstract class ASTNode extends CommonTree {
 
+    private static final Logger log = LoggerFactory.getLogger(ASTNode.class);
+
     public static HashMap<String, Object> symbolTable = null;
     private static int declarationID = 1;
 
     public void print() {
         if (token != null)
-            System.out.println(token.getText());
+            log.debug(token.getText());
         if (this.children != null)
             for (Object i : this.children) {
                 if (i instanceof ASTNode)
@@ -112,10 +116,7 @@ public abstract class ASTNode extends CommonTree {
                 start.addChild(paramList.clone());
             }
             StmntList result = new StmntList(getType());
-
-            if (result != null) {
-                result.addChild(result.clone());
-            }
+            result.addChild(result.clone());
 
             return start;
         }
@@ -215,9 +216,7 @@ public abstract class ASTNode extends CommonTree {
 
         @Override
         public Expression clone() {
-            Expression result = new Expression(getType(), getToken().getText());
-
-            return result;
+            return new Expression(getType(), getToken().getText());
         }
 
     }
@@ -271,9 +270,7 @@ public abstract class ASTNode extends CommonTree {
 
         @Override
         public VarRef clone() {
-            VarRef result = new VarRef(getType(), getId());
-
-            return result;
+            return new VarRef(getType(), getId());
         }
 
     }

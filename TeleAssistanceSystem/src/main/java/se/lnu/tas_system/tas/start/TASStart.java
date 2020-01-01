@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.profile.InputProfileValue;
 import se.lnu.research_service_platform.profile.InputProfileVariable;
 import se.lnu.research_service_platform.profile.ProfileExecutor;
@@ -31,6 +33,8 @@ import se.lnu.tas_system.tas.services.qos.ReliabilityQoS;
 
 //This class was previously named as TASStart in the TAS verions 1.5 and 1.6.
 public class TASStart {
+
+    private static final Logger log = LoggerFactory.getLogger(TASStart.class);
 
     private HashMap<String, AdaptationEngine> adaptationEngines = new LinkedHashMap<>();
 
@@ -292,13 +296,13 @@ public class TASStart {
 
                 double probability = rand.nextDouble();
                 double valueProbability = 0;
-                for (int j = 0; j < values.size(); j++) {
-                    if ((values.get(j).getRatio() + valueProbability) > probability) {
-                        pick = (int) values.get(j).getData();
+                for (InputProfileValue value : values) {
+                    if ((value.getRatio() + valueProbability) > probability) {
+                        pick = (int) value.getData();
                         client.invokeCompositeService(ProfileExecutor.profile.getQosRequirement(), patientId, pick);
                         break;
                     } else
-                        valueProbability = valueProbability + values.get(j).getRatio();
+                        valueProbability = valueProbability + value.getRatio();
                 }
 
 
@@ -307,7 +311,7 @@ public class TASStart {
 
             }
             stop();
-            System.out.println("finish executing workflow !!!");
+            log.info("Workflow execution finished");
         }
     }
 

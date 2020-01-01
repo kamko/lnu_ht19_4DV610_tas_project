@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.lnu.tas_gui.application.utility.Utility;
 import se.lnu.tas_gui.application.view.controller.ApplicationController;
-import se.lnu.tas_system.tas.services.log.Log;
+import se.lnu.tas_system.tas.services.log.UILogger;
 import se.lnu.tas_system.tas.start.TASStart;
 
 public class MainGui extends Application {
@@ -27,7 +27,7 @@ public class MainGui extends Application {
     public void start(Stage primaryStage) throws Exception {
         Utility.createFile(logFile);
         Utility.createFile(resultFile);
-        Log.initialize(logFile);
+        UILogger.initialize(logFile);
 
         TASStart tasStart = new TASStart();
 
@@ -46,7 +46,7 @@ public class MainGui extends Application {
         Scene scene = new Scene(pane);
         scene.getStylesheets().add(getClass().getResource("/javafx/application.css").toExternalForm());
         primaryStage.setOnCloseRequest(arg0 -> {
-            Log.stop();
+            UILogger.stop();
             System.exit(0);
         });
 

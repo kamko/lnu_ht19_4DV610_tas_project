@@ -5,15 +5,18 @@ package se.lnu.tas_system.tas.services.profiles;
 
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.atomic.ServiceProfile;
 import se.lnu.research_service_platform.service.atomic.ServiceProfileAttribute;
 
 /**
  * @author yfruan
  * @email ry222ad@student.lnu.se
- *
  */
 public class SimpleServiceFailureProfile extends ServiceProfile {
+
+    private static final Logger log = LoggerFactory.getLogger(SimpleServiceFailureProfile.class);
 
     @ServiceProfileAttribute()
     public double failureRate;   // failure number in 100 invocation times
@@ -28,12 +31,9 @@ public class SimpleServiceFailureProfile extends ServiceProfile {
 
     @Override
     public boolean preInvokeOperation(String operationName, Object... args) {
-        System.out.println("PreInvokeOperation");
+        log.debug("PreInvokeOperation");
         Random rand = new Random();
-        if (rand.nextDouble() <= failureRate) {
-            return false;
-        }
-        return true;
+        return !(rand.nextDouble() <= failureRate);
     }
 
     @Override

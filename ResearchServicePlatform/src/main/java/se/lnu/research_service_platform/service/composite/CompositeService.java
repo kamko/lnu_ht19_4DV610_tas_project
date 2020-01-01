@@ -1,14 +1,15 @@
 package se.lnu.research_service_platform.service.composite;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.adaptation.probes.CostProbe;
 import se.lnu.research_service_platform.service.adaptation.probes.WorkflowProbe;
 import se.lnu.research_service_platform.service.auxiliary.AbstractService;
@@ -27,6 +28,8 @@ import se.lnu.research_service_platform.service.workflow.WorkflowEngine;
  * Providing an abstraction to create composite services
  */
 public abstract class CompositeService extends AbstractService {
+
+    private static final Logger log = LoggerFactory.getLogger(CompositeService.class);
 
     private String workflow;
     // Initializing probes
@@ -63,29 +66,27 @@ public abstract class CompositeService extends AbstractService {
     @Override
     protected void readConfiguration() {
         try {
-            Annotation annotation = this.getClass().getAnnotation(
+            CompositeServiceConfiguration annotation = this.getClass().getAnnotation(
                     CompositeServiceConfiguration.class);
-            if (annotation != null
-                    && annotation instanceof CompositeServiceConfiguration) {
-                CompositeServiceConfiguration CSConfiguration = (CompositeServiceConfiguration) annotation;
+            if (annotation != null) {
                 this.configuration = new Configuration(
-                        CSConfiguration.MultipeThreads(),
-                        CSConfiguration.MaxNoOfThreads(),
-                        CSConfiguration.MaxQueueSize(),
-                        CSConfiguration.Timeout(),
-                        CSConfiguration.IgnoreTimeOutError(),
-                        CSConfiguration.MaxRetryAttempts(),
-                        CSConfiguration.SDCacheMode(),
-                        CSConfiguration.SDCacheShared(),
-                        CSConfiguration.SDCacheTimeout(),
-                        CSConfiguration.SDCacheSize());
+                        annotation.MultipeThreads(),
+                        annotation.MaxNoOfThreads(),
+                        annotation.MaxQueueSize(),
+                        annotation.Timeout(),
+                        annotation.IgnoreTimeOutError(),
+                        annotation.MaxRetryAttempts(),
+                        annotation.SDCacheMode(),
+                        annotation.SDCacheShared(),
+                        annotation.SDCacheTimeout(),
+                        annotation.SDCacheSize());
             } else {
                 // the default configuration
                 this.configuration = new Configuration(false, 1, 0, 0, false,
                         1, true, true, -1, -1);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error", e);
         }
     }
 
@@ -100,12 +101,12 @@ public abstract class CompositeService extends AbstractService {
         super(serviceName, serviceEndpoint);
         this.workflow = workflow;
 
-        if (configuration.SDCacheMode == false) {
-            System.err.println("Warning! Cache mode cannot be turned off.");
-        } else if (configuration.SDCacheShared == false) {
-            System.err.println("Warning! Cache mode sharing cannot be turned off.");
+        if (!configuration.SDCacheMode) {
+            log.error("Warning! Cache mode cannot be turned off.");
+        } else if (!configuration.SDCacheShared) {
+            log.error("Warning! Cache mode sharing cannot be turned off.");
         } else if (configuration.SDCacheSize == 0) {
-            System.err.println("Warning! Cache size cannot be equal to zero.");
+            log.error("Warning! Cache size cannot be equal to zero.");
         }
 
         //if (this.configuration.SDCacheMode) {
@@ -139,9 +140,7 @@ public abstract class CompositeService extends AbstractService {
      */
     @ServiceOperation
     public List<String> getQosRequirementNames() {
-        List<String> list = new LinkedList<String>();
-        list.addAll(qosRequirements.keySet());
-        return list;
+        return new ArrayList<>(qosRequirements.keySet());
     }
 
     /**
@@ -153,7 +152,7 @@ public abstract class CompositeService extends AbstractService {
      * @return the result after executing the workflow
      */
     @ServiceOperation
-    public Object invokeCompositeService(String qosRequirement, Object params[]) {
+    public Object invokeCompositeService(String qosRequirement, Object[] params) {
         //AbstractQoSRequirement qosRequirement = qosRequirements.get(qosRequirementName);
 
         // If SDCache shared is not on then a new cache object for the workflow should be created
@@ -185,8 +184,7 @@ public abstract class CompositeService extends AbstractService {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("The operation name or params are not valid. Please check and send again!");
+                    log.error("The operation name or params are not valid. Please check and send again!", e);
                 }
             }
         }
@@ -319,7 +317,7 @@ public abstract class CompositeService extends AbstractService {
                 this.getCostProbe().notifyCostSubscribers(service, opName);
             }
 
-            if (stopRetrying.get() == true) {
+            if (stopRetrying.get()) {
                 stopRetrying.set(false);
                 break;
             }
@@ -344,7 +342,7 @@ public abstract class CompositeService extends AbstractService {
                     try {
                         return operation.invoke(this, params);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error("Error", e);
                     }
                 }
             }

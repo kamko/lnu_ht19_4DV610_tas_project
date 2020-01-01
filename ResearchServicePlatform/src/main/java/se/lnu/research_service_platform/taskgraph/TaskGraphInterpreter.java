@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.auxiliary.ExecutionThread;
 import se.lnu.research_service_platform.service.auxiliary.TimeOutError;
 import se.lnu.research_service_platform.service.client.AbstractServiceClient;
@@ -29,6 +31,8 @@ import se.lnu.research_service_platform.taskgraph.TaskGraph.TernaryOp;
 import se.lnu.research_service_platform.taskgraph.TaskGraph.UnaryOp;
 
 public class TaskGraphInterpreter {
+
+    private static final Logger log = LoggerFactory.getLogger(TaskGraphInterpreter.class);
 
     private HashMap<String, Object> heap = new HashMap<String, Object>();
 
@@ -395,26 +399,22 @@ public class TaskGraphInterpreter {
                 case PARALLEL:
                     PARALLEL parallel = (PARALLEL) CT;
                     List<TaskGraph> tasks = parallel.getStatements();
-                    //ExecutorService threadpool = Executors.newCachedThreadPool();
                     FutureTask[] futureList = new FutureTask[tasks.size()];
-                    ExecutionThread[] threads = new ExecutionThread[tasks.size()];
 
                     SimClock.beginParallel();
 
                     for (int i = 0; i < tasks.size(); i++) {
                         final TaskGraph task = tasks.get(i);
 
-                        Callable<Double> callable = new Callable<Double>() {
-                            public Double call() throws Exception {
-                                TaskGraphInterpreter interpreter = new TaskGraphInterpreter();
-                                interpreter.heap = heap;
-                                interpreter.compositeService = compositeService;
-                                interpreter.interpret(task, qosRequirement, compositeService, args);
-                                return ((ExecutionThread) Thread.currentThread()).getCurrentTime();
-                            }
+                        Callable<Double> callable = () -> {
+                            TaskGraphInterpreter interpreter = new TaskGraphInterpreter();
+                            interpreter.heap = heap;
+                            interpreter.compositeService = compositeService;
+                            interpreter.interpret(task, qosRequirement, compositeService, args);
+                            return ((ExecutionThread) Thread.currentThread()).getCurrentTime();
                         };
 
-                        FutureTask<Double> future = new FutureTask<Double>(callable);
+                        FutureTask<Double> future = new FutureTask<>(callable);
                         futureList[i] = future;
                         new ExecutionThread("parallel" + i, future).start();
                     }
@@ -445,7 +445,7 @@ public class TaskGraphInterpreter {
             }
 
             if (CT == null) {
-                System.out.println("Null CT");
+                log.debug("Null CT");
             }
         }
 
@@ -541,7 +541,7 @@ public class TaskGraphInterpreter {
             return (Integer) value;
         }
         if (value instanceof Boolean) {
-            return ((Boolean) value) == true ? 1 : 0;
+            return ((Boolean) value) ? 1 : 0;
         }
         return Integer.parseInt((String) value);
     }
@@ -563,7 +563,7 @@ public class TaskGraphInterpreter {
         if (value instanceof Boolean) {
             return (boolean) exp.getValue();
         }
-        return result == 0 ? false : true;
+        return result != 0;
     }
 
     /*

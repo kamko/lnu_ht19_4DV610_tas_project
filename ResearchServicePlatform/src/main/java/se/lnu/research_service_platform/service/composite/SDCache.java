@@ -301,7 +301,7 @@ public class SDCache {
         }
     }
 
-    class Description {
+    static class Description {
         String serviceType;
         String opName;
 
@@ -319,8 +319,7 @@ public class SDCache {
         public boolean equals(Object obj) {
             if (obj instanceof Description) {
                 Description description = (Description) obj;
-                if (description.serviceType.equals(serviceType) && description.opName.equals(opName))
-                    return true;
+                return description.serviceType.equals(serviceType) && description.opName.equals(opName);
             }
             return false;
         }

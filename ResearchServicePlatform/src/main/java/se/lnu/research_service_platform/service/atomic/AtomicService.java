@@ -1,10 +1,11 @@
 package se.lnu.research_service_platform.service.atomic;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.auxiliary.AbstractService;
 import se.lnu.research_service_platform.service.auxiliary.AtomicServiceConfiguration;
 import se.lnu.research_service_platform.service.auxiliary.Configuration;
@@ -18,6 +19,9 @@ import se.lnu.research_service_platform.service.auxiliary.ServiceOperation;
  * providing a logical entity for creating atomic services
  */
 public abstract class AtomicService extends AbstractService {
+
+    private static final Logger log = LoggerFactory.getLogger(AtomicService.class);
+
     private List<ServiceProfile> serviceProfiles = new ArrayList<>();
 
     /**
@@ -98,8 +102,8 @@ public abstract class AtomicService extends AbstractService {
                             // if the current result is false, stop executing the next one
                             boolean flag = true;
 
-                            for (int i = 0; i < serviceProfileNum; i++) {
-                                if (!(flag = serviceProfiles.get(i).preInvokeOperation(opName, args))) {
+                            for (ServiceProfile serviceProfile : this.serviceProfiles) {
+                                if (!(flag = serviceProfile.preInvokeOperation(opName, args))) {
                                     return new ServiceFailed();
                                     //break;
                                 }
@@ -120,8 +124,7 @@ public abstract class AtomicService extends AbstractService {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace(System.out);
-                    System.out.println("The operation name or params are not valid. Please check and send again!");
+                    log.error("The operation name or params are not valid. Please check and send again!", e);
                 }
             }
         }
@@ -131,17 +134,16 @@ public abstract class AtomicService extends AbstractService {
     @Override
     protected void readConfiguration() {
         try {
-            Annotation annotation = this.getClass().getAnnotation(AtomicServiceConfiguration.class);
-            if (annotation != null && annotation instanceof AtomicServiceConfiguration) {
-                AtomicServiceConfiguration CSConfiguration = (AtomicServiceConfiguration) annotation;
+            AtomicServiceConfiguration annotation = this.getClass().getAnnotation(AtomicServiceConfiguration.class);
+            if (annotation != null) {
                 this.configuration = new Configuration(
-                        CSConfiguration.MultipeThreads(),
-                        CSConfiguration.MaxNoOfThreads(),
-                        CSConfiguration.MaxQueueSize());
+                        annotation.MultipeThreads(),
+                        annotation.MaxNoOfThreads(),
+                        annotation.MaxQueueSize());
             } else
                 this.configuration = new Configuration(false, 1, 0);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error", e);
         }
     }
 

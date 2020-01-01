@@ -11,12 +11,14 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.adaptation.probes.interfaces.CostProbeInterface;
 import se.lnu.research_service_platform.service.adaptation.probes.interfaces.WorkflowProbeInterface;
 import se.lnu.research_service_platform.service.auxiliary.ServiceDescription;
 import se.lnu.research_service_platform.service.auxiliary.TimeOutError;
 import se.lnu.research_service_platform.service.utility.SimClock;
-import se.lnu.tas_system.tas.services.log.Log;
+import se.lnu.tas_system.tas.services.log.UILogger;
 
 /**
  * @author yfruan
@@ -25,10 +27,9 @@ import se.lnu.tas_system.tas.services.log.Log;
  */
 public class AssistanceServiceCostProbe implements WorkflowProbeInterface, CostProbeInterface {
 
-    //String costFilePath="cost.csv";
+    private static final Logger log = LoggerFactory.getLogger(AssistanceServiceCostProbe.class);
 
     private static String resultFilePath = "results" + File.separator + "result.csv";
-    //private static String resultFilePath="result.csv";
     private double totalCost = 0;
 
     private StringBuilder resultBuilder;
@@ -59,8 +60,8 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface, CostP
      */
     @Override
     public void workflowStarted(String qosRequirement, Object[] params) {
-        System.out.println("Probe: workflowStarted");
-        Log.addLog("WorkflowStarted", "Workflow Started monitoring");
+        log.debug("Probe: workflowStarted");
+        UILogger.addLog("WorkflowStarted", "Workflow Started monitoring");
         resultBuilder = new StringBuilder();
         totalCost = 0;
         workflowInvocationCount++;
@@ -73,16 +74,16 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface, CostP
      */
     @Override
     public void workflowEnded(Object result, String qosRequirement, Object[] params) {
-        System.out.println("Probe: workflowEnded");
+        log.debug("Probe: workflowEnded");
         if (result instanceof TimeOutError) {
-            System.out.println("WorkflowError!!!");
-            resultBuilder.append(workflowInvocationCount + "," + "AssistanceService" + ",false," + totalCost + "\n");
+            log.error("Workflow TimeoutError!");
+            resultBuilder.append(workflowInvocationCount).append(",").append("AssistanceService").append(",false,").append(totalCost).append("\n");
         } else
-            resultBuilder.append(workflowInvocationCount + "," + "AssistanceService" + ",true," + totalCost + "\n");
-        try (
-                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(resultFilePath, true)))) {
+            resultBuilder.append(workflowInvocationCount).append(",").append("AssistanceService").append(",true,").append(totalCost).append("\n");
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(resultFilePath, true)))) {
             out.println(resultBuilder.toString());
         } catch (IOException e) {
+            log.error("Error", e);
         }
     }
 
@@ -93,14 +94,14 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface, CostP
      */
     @Override
     public void serviceOperationTimeout(ServiceDescription service, String opName, Object[] params) {
-        System.out.println("Probe: timeout");
-        resultBuilder.append(workflowInvocationCount + "," + service.getServiceName() + ",false\n");
+        log.debug("Probe: timeout");
+        resultBuilder.append(workflowInvocationCount).append(",").append(service.getServiceName()).append(",false\n");
     }
 
     @Override
     public void serviceCost(ServiceDescription service, String opName, double cost) {
         String serviceName = service.getServiceName();
-        System.out.println("Serivice Cost: " + cost);
+        log.debug("Service Cost: {}", cost);
         String fullOperation = serviceName + "." + opName;
 
 
@@ -109,7 +110,7 @@ public class AssistanceServiceCostProbe implements WorkflowProbeInterface, CostP
         Double end = SimClock.getCurrentTime();
 
         totalCost = totalCost + cost;
-        resultBuilder.append(workflowInvocationCount + "," + serviceName + ",true," + cost + "," + begin + "," + (end - begin) + "\n");
+        resultBuilder.append(workflowInvocationCount).append(",").append(serviceName).append(",true,").append(cost).append(",").append(begin).append(",").append(end - begin).append("\n");
     }
 
     @Override

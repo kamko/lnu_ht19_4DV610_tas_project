@@ -61,6 +61,8 @@ import javafx.stage.Stage;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.profile.InputProfile;
 import se.lnu.research_service_platform.profile.ProfileExecutor;
 import se.lnu.research_service_platform.profile.Requirement;
@@ -82,6 +84,8 @@ import se.lnu.tas_system.tas.start.TASStart;
 
 public class ApplicationController implements Initializable {
 
+    private static final Logger log = LoggerFactory.getLogger(ApplicationController.class);
+
     Stage primaryStage;
 
     // for generating kinds of charts
@@ -90,7 +94,7 @@ public class ApplicationController implements Initializable {
     // for generating kinds of table views
     TableViewController tableViewController;
 
-    // the path of important files 
+    // the path of important files
     //String workflowPath = "src"+File.separator+"resources" + File.separator + "workflow_test1.txt";
 
     String baseDir = "";
@@ -902,7 +906,7 @@ public class ApplicationController implements Initializable {
 
                     probe.reset();
 
-                    Task<Void> task = new Task<Void>() {
+                    Task<Void> task = new Task<>() {
                         @Override
                         protected Void call() throws Exception {
 
@@ -936,19 +940,7 @@ public class ApplicationController implements Initializable {
                                     adaptationEngines.get(preAdaptation).stop();
                                 preAdaptation = null;
 
-                                Platform.runLater(() -> {
-                                    circle.setFill(Color.GREEN);
-                                    runButton.setId("runButton");
-                                    chartController.clear();
-                                    tableViewController.clear();
-
-                                    chartController.generateCharts(resultFilePath, tasStart.getCurrentSteps());
-                                    chartController.generateAvgCharts(resultFilePath, tasStart.getCurrentSteps(), Integer.parseInt(sliceTextField.getText()));
-
-                                    tableViewController.fillReliabilityDate(resultFilePath);
-                                    tableViewController.fillCostData(resultFilePath);
-                                    tableViewController.fillPerformanceData(resultFilePath);
-                                });
+                                showResults(circle, runButton);
                             }
                             return null;
                         }
@@ -964,28 +956,18 @@ public class ApplicationController implements Initializable {
                     //thread.setDaemon(true);
                     //thread.start();
 
-                    System.out.println("Start task!!");
+                    log.info("Start task!!");
                     ProfileExecutor.readFromXml(path);
                     maxSteps = ProfileExecutor.profile.getMaxSteps();
-                    Task<Void> progressTask = new Task<Void>() {
+                    Task<Void> progressTask = new Task<>() {
                         @Override
                         protected Void call() throws Exception {
                             while (probe.workflowInvocationCount < maxSteps) {
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        invocationLabel.setText(" " + probe.workflowInvocationCount + " / " + maxSteps);
-                                    }
-                                });
+                                Platform.runLater(() -> invocationLabel.setText(" " + probe.workflowInvocationCount + " / " + maxSteps));
                                 updateProgress(probe.workflowInvocationCount, maxSteps);
                                 Thread.sleep(1000);
                             }
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    invocationLabel.setText("" + maxSteps + " / " + maxSteps);
-                                }
-                            });
+                            Platform.runLater(() -> invocationLabel.setText("" + maxSteps + " / " + maxSteps));
                             updateProgress(probe.workflowInvocationCount, maxSteps);
                             return null;
                         }
@@ -1001,19 +983,7 @@ public class ApplicationController implements Initializable {
                     tasStart.stop();
                     //tasStart.pause();
 
-                    Platform.runLater(() -> {
-                        circle.setFill(Color.GREEN);
-                        runButton.setId("runButton");
-                        chartController.clear();
-                        tableViewController.clear();
-
-                        chartController.generateCharts(resultFilePath, tasStart.getCurrentSteps());
-                        chartController.generateAvgCharts(resultFilePath, tasStart.getCurrentSteps(), Integer.parseInt(sliceTextField.getText()));
-
-                        tableViewController.fillReliabilityDate(resultFilePath);
-                        tableViewController.fillCostData(resultFilePath);
-                        tableViewController.fillPerformanceData(resultFilePath);
-                    });
+                    showResults(circle, runButton);
                 }
             }
         });
@@ -1027,6 +997,22 @@ public class ApplicationController implements Initializable {
 
         profileListView.getItems().add(itemPane);
 
+    }
+
+    private void showResults(Circle circle, Button runButton) {
+        Platform.runLater(() -> {
+            circle.setFill(Color.GREEN);
+            runButton.setId("runButton");
+            chartController.clear();
+            tableViewController.clear();
+
+            chartController.generateCharts(resultFilePath, tasStart.getCurrentSteps());
+            chartController.generateAvgCharts(resultFilePath, tasStart.getCurrentSteps(), Integer.parseInt(sliceTextField.getText()));
+
+            tableViewController.fillReliabilityDate(resultFilePath);
+            tableViewController.fillCostData(resultFilePath);
+            tableViewController.fillPerformanceData(resultFilePath);
+        });
     }
 
     private AnchorPane addService(String serviceName, boolean state) {

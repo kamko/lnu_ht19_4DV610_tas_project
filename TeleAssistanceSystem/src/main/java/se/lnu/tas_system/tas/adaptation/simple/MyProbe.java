@@ -1,5 +1,7 @@
 package se.lnu.tas_system.tas.adaptation.simple;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.lnu.research_service_platform.service.adaptation.probes.interfaces.WorkflowProbeInterface;
 import se.lnu.research_service_platform.service.auxiliary.ServiceDescription;
 import se.lnu.tas_system.tas.adaptation.SimpleAdaptationEngine;
@@ -9,6 +11,8 @@ import se.lnu.tas_system.tas.adaptation.SimpleAdaptationEngine;
  */
 public class MyProbe implements WorkflowProbeInterface {
 
+    private static final Logger log = LoggerFactory.getLogger(MyProbe.class);
+
     SimpleAdaptationEngine myAdaptationEngine;
 
     public void connect(SimpleAdaptationEngine myAdaptationEngine) {
@@ -17,13 +21,13 @@ public class MyProbe implements WorkflowProbeInterface {
 
     @Override
     public void workflowStarted(String qosRequirement, Object[] params) {
-        System.err.println("MyProbe Workflow Started monitoring");
+        log.debug("MyProbe Workflow Started monitoring");
         //Log.addLog("WorkflowStarted", "Workflow Started monitoring");
     }
 
     @Override
     public void workflowEnded(Object result, String qosRequirement, Object[] params) {
-        System.err.println("MyProbe Workflow Ended");
+        log.debug("MyProbe Workflow Ended");
     }
 
     @Override
@@ -38,7 +42,7 @@ public class MyProbe implements WorkflowProbeInterface {
 
     @Override
     public void serviceOperationTimeout(ServiceDescription service, String opName, Object[] params) {
-        System.err.println("Service Failed: " + service.getServiceName());
+        log.error("Service Failed: {}", service.getServiceName());
 
         // Remove service from cache
         myAdaptationEngine.handleServiceFailure(service, opName);
@@ -46,7 +50,7 @@ public class MyProbe implements WorkflowProbeInterface {
 
     @Override
     public void serviceNotFound(String serviceType, String opName) {
-        System.err.println(serviceType + opName + "Not found");
+        log.error("{}{} Not Found", serviceType, opName);
         myAdaptationEngine.handleServiceNotFound(serviceType, opName);
     }
 }

@@ -4,11 +4,20 @@
 package se.lnu.research_service_platform.service.auxiliary;
 
 /**
- *
  * List of parameter definitions for configuring
- *
  */
 public class Configuration {
+
+    public boolean multipleThreads;
+    public int maxNoOfThreads;
+    public int maxQueueSize;
+    public int timeout;
+    public boolean ignoreTimeoutError;
+    public int maxRetryAttempts;
+    public boolean SDCacheMode;
+    public boolean SDCacheShared;
+    public int SDCacheTimeout;
+    public int SDCacheSize;
 
     /**
      * Constructor
@@ -45,20 +54,8 @@ public class Configuration {
         this.multipleThreads = multipleThreads;
         this.maxNoOfThreads = maxNoOfThreads;
         this.maxQueueSize = maxQueueSize;
-        if (maxNoOfThreads == -1 && multipleThreads == true) {
-            maxNoOfThreads = Runtime.getRuntime().availableProcessors();
+        if (maxNoOfThreads == -1 && multipleThreads) {
+            this.maxNoOfThreads = Runtime.getRuntime().availableProcessors();
         }
     }
-
-    public boolean multipleThreads;
-    public int maxNoOfThreads;
-    public int maxQueueSize;
-    public int timeout;
-    public boolean ignoreTimeoutError;
-    public int maxRetryAttempts;
-    public boolean SDCacheMode;
-    public boolean SDCacheShared;
-    public int SDCacheTimeout;
-    public int SDCacheSize;
-
 }

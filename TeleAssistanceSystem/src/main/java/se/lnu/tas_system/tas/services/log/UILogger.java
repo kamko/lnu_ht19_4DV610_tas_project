@@ -14,8 +14,13 @@ import java.util.Date;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Log {
+public class UILogger {
+
+    private static final Logger log = LoggerFactory.getLogger(UILogger.class);
+
     public static ObservableList<LogEntry> logData = FXCollections.observableArrayList();
     private static PrintWriter out;
     private static String logFile;
@@ -37,7 +42,7 @@ public class Log {
     public static void addLog(String title, String message) {
         SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
-        String time = dataFormat.format(date).toString();
+        String time = dataFormat.format(date);
 
         logData.add(new LogEntry(time, title, message));
         out.println(time + "," + title + "," + message);
@@ -52,11 +57,12 @@ public class Log {
             FileLock lock = new RandomAccessFile(file, "rw").getChannel().lock();
 
             if (lock != null) {
-                System.out.println("file locked");
+                log.trace("file locked");
+                System.out.println();
                 file.delete();
                 file.createNewFile();
                 lock.release();
-                System.out.println("file released");
+                log.trace("file released");
                 logData.clear();
             }
 
@@ -99,7 +105,7 @@ public class Log {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("read from file " + logFile);
+        log.info("read from file {}", logFile);
     }
 
 }
