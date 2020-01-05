@@ -248,30 +248,24 @@ public class ApplicationController implements Initializable {
         this.fillProfiles();
         this.setButton();
 
-        scheduExec.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
+        scheduExec.scheduleAtFixedRate(() -> {
 
-                Set<String> services = compositeService.getCache().getServices();
-                Set<String> registeredServices = servicePanes.keySet();
+            Set<String> services = compositeService.getCache().getServices();
+            Set<String> registeredServices = servicePanes.keySet();
 
-                for (String service : registeredServices) {
+            for (String service : registeredServices) {
 
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
+                Platform.runLater(() -> {
 
-                            Circle circle = (Circle) servicePanes.get(service).getChildren().get(0);
+                    Circle circle = (Circle) servicePanes.get(service).getChildren().get(0);
 
-                            if (services != null && services.contains(service))
-                                circle.setFill(Color.GREEN);
-                            else
-                                circle.setFill(Color.DARKRED);
-                        }
-                    });
-                }
-
+                    if (services != null && services.contains(service))
+                        circle.setFill(Color.GREEN);
+                    else
+                        circle.setFill(Color.DARKRED);
+                });
             }
+
         }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 

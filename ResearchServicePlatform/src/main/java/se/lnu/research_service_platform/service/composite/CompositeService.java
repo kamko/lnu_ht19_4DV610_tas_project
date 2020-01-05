@@ -3,9 +3,11 @@ package se.lnu.research_service_platform.service.composite;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
@@ -53,6 +55,7 @@ public abstract class CompositeService extends AbstractService {
     private Map<String, AbstractQoSRequirement> qosRequirements = new HashMap<String, AbstractQoSRequirement>();
 
     private SDCache cache;
+    private CacheHistory cacheHistory;
 
     /**
      * Return the cache
@@ -61,6 +64,11 @@ public abstract class CompositeService extends AbstractService {
      */
     public SDCache getCache() {
         return cache;
+    }
+
+    public void clearCache() {
+        cache.refresh();
+        cacheHistory.clear();
     }
 
     @Override
@@ -111,6 +119,7 @@ public abstract class CompositeService extends AbstractService {
 
         //if (this.configuration.SDCacheMode) {
         cache = new SDCache();
+        cacheHistory = new CacheHistory();
         //}
     }
 
@@ -199,21 +208,22 @@ public abstract class CompositeService extends AbstractService {
      * @param opName      the operation name
      * @return list of service descriptions with the same service type and operation name
      */
-    @SuppressWarnings("unchecked")
     public List<ServiceDescription> lookupService(String serviceType, String opName) {
-        List<ServiceDescription> serviceDescriptions = cache.get(serviceType,
-                opName);
-        if (serviceDescriptions == null || serviceDescriptions.size() == 0) {
-            serviceDescriptions = (List<ServiceDescription>) this.sendRequest(
-                    ServiceRegistry.NAME, ServiceRegistry.ADDRESS, true,
-                    "lookup", serviceType, opName);
-            cache.add(serviceType, opName, serviceDescriptions);
+        // if it's first time requesting this service - load all into cache
+        if (!cacheHistory.wasAlreadyRequested(serviceType, opName)) {
+            reloadServicesCache(serviceType, opName);
         }
 
-        if (serviceDescriptions == null || serviceDescriptions.size() == 0) {
-            this.getWorkflowProbe().notifyServiceNotFound(serviceType, opName);
-            //serviceDescriptions = this.lookupService(serviceType, opName);
-        }
+        // load service from cache
+        return cache.get(serviceType, opName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ServiceDescription> reloadServicesCache(String serviceType, String opName) {
+        List<ServiceDescription> serviceDescriptions = (List<ServiceDescription>) this.sendRequest(
+                ServiceRegistry.NAME, ServiceRegistry.ADDRESS, true,
+                "lookup", serviceType, opName);
+        cache.add(serviceType, opName, serviceDescriptions);
 
         return serviceDescriptions;
     }
@@ -269,8 +279,8 @@ public abstract class CompositeService extends AbstractService {
     protected ServiceDescription applyQoSRequirement(String qosRequirementName, List<ServiceDescription> descriptions, String opName, Object... params) {
         AbstractQoSRequirement qosRequirement = qosRequirements.get(qosRequirementName);
         if (qosRequirement == null) {
-            System.err.println("QoS requirement is null. To select among multiple services, a QoS requirement must have been provided.");
-            System.err.println("Selecting a service randomly...");
+            log.warn("QoS requirement is null. To select among multiple services, a QoS requirement must have been provided.");
+            log.warn("Selecting a service randomly...");
             return descriptions.get(new Random().nextInt(descriptions.size()));
         }
         return qosRequirement.applyQoSRequirement(descriptions, opName, params);
@@ -288,15 +298,15 @@ public abstract class CompositeService extends AbstractService {
     public Object invokeServiceOperation(String qosRequirement, String serviceName, String opName, Object[] params) {
 
         int timeout = this.getConfiguration().timeout;
-        Object resultVal;
+        Object resultVal = null;
         int retryAttempts = 0;
         stopRetrying.set(false);
         do {
             List<ServiceDescription> services = lookupService(serviceName, opName);
             if (services == null || services.size() == 0) {
-                System.out.println("ServiceName: " + serviceName + "." + opName + "not found!");
+                log.error("ServiceName: {}.{} not found!", serviceName, opName);
                 getWorkflowProbe().notifyServiceNotFound(serviceName, opName);
-                resultVal = new TimeOutError();
+                continue;
             }
 
             // Apply strategy
@@ -356,5 +366,21 @@ public abstract class CompositeService extends AbstractService {
      */
     public void stopRetrying() {
         stopRetrying.set(true);
+    }
+
+    private static class CacheHistory {
+        private final Set<String> seen = new HashSet<>();
+
+        void clear() {
+            seen.clear();
+        }
+
+        boolean wasAlreadyRequested(String serviceType, String opName) {
+            return !seen.add(name(serviceType, opName));
+        }
+
+        private String name(String serviceType, String opName) {
+            return serviceType + "." + opName;
+        }
     }
 }

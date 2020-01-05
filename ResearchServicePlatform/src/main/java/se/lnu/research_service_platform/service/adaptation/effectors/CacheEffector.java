@@ -55,7 +55,7 @@ public class CacheEffector {
      * all services will be removed.
      */
     public void refreshCache() {
-        compositeService.getCache().refresh();
+        compositeService.clearCache();
     }
 
     /**
@@ -67,11 +67,11 @@ public class CacheEffector {
      */
     public void refreshCache(String serviceType, String opName) {
         compositeService.getCache().remove(serviceType, opName);
-        compositeService.lookupService(serviceType, opName);
+        compositeService.reloadServicesCache(serviceType, opName);
     }
 
     /**
-     * Remove and Reload all services with same service description and operation
+     * Remove and Reload allco  services with same service description and operation
      *
      * @param description the service description
      * @param opName      the operation name
@@ -79,7 +79,7 @@ public class CacheEffector {
      */
     public List<ServiceDescription> refreshCache(ServiceDescription description, String opName) {
         removeService(description, opName);
-        return compositeService.lookupService(description.getServiceType(), opName);
+        return compositeService.reloadServicesCache(description.getServiceType(), opName);
     }
 
     /**
