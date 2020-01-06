@@ -9,7 +9,7 @@ import se.lnu.research_service_platform.service.composite.CompositeService;
 /**
  * Responsible for changing cache
  */
-public class CacheEffector {
+public class CacheEffector extends AbstractEffector {
 
     private CompositeService compositeService;
 
@@ -19,6 +19,7 @@ public class CacheEffector {
      * @param compositeService which composite service to be affected
      */
     public CacheEffector(CompositeService compositeService) {
+        super(compositeService);
         this.compositeService = compositeService;
     }
 

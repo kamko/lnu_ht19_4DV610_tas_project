@@ -230,7 +230,7 @@ public class TASStart {
         assistanceService.getCostProbe().register(monitor);
         assistanceService.getWorkflowProbe().register(monitor);
         //assistanceService.getWorkflowProbe().register(new AssistanceServiceDelayProbe());
-        // assistanceService.getServiceInvocationProbe().register(monitor);
+//         assistanceService.getServiceInvocationProbe().register(monitor);
 
         //effectors instrumentation
         workflowEffector = new WorkflowEffector(assistanceService);
