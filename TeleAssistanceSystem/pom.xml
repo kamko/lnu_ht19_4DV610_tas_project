@@ -32,11 +32,6 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>dev.kamko</groupId>
-            <artifactId>self-adaptation</artifactId>
-            <version>0.0.1</version>
-        </dependency>
     </dependencies>
 
 </project>

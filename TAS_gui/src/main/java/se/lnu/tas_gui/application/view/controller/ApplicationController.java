@@ -900,7 +900,7 @@ public class ApplicationController implements Initializable {
 
                     probe.reset();
 
-                    Task<Void> task = new Task<>() {
+                    Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
 
@@ -953,7 +953,7 @@ public class ApplicationController implements Initializable {
                     log.info("Start task!!");
                     ProfileExecutor.readFromXml(path);
                     maxSteps = ProfileExecutor.profile.getMaxSteps();
-                    Task<Void> progressTask = new Task<>() {
+                    Task<Void> progressTask = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
                             while (probe.workflowInvocationCount < maxSteps) {

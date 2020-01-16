@@ -20,6 +20,7 @@ import se.lnu.research_service_platform.service.utility.Time;
 import se.lnu.tas_system.tas.adaptation.AdaptationEngine;
 import se.lnu.tas_system.tas.adaptation.DefaultAdaptationEngine;
 import se.lnu.tas_system.tas.adaptation.SimpleAdaptationEngine;
+import se.lnu.tas_system.tas.adaptation.assignment.t1.BasicAdaptationEngine;
 import se.lnu.tas_system.tas.services.alarm.AlarmService;
 import se.lnu.tas_system.tas.services.assistance.AssistanceService;
 import se.lnu.tas_system.tas.services.assistance.AssistanceServiceCostProbe;
@@ -128,6 +129,8 @@ public class TASStart {
         initializeTAS();
         adaptationEngines.put("No Adaptation", new DefaultAdaptationEngine());
         adaptationEngines.put("Simple Adaptation", new SimpleAdaptationEngine(assistanceService));
+        adaptationEngines.put("Task1 Engine", new BasicAdaptationEngine(assistanceService));
+        adaptationEngines.put("Task2 Engine", new BasicAdaptationEngine(assistanceService));
     }
 
     public HashMap<String, AdaptationEngine> getAdaptationEngines() {
