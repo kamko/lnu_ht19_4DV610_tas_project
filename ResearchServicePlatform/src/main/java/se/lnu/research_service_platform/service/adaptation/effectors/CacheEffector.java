@@ -1,5 +1,6 @@
 package se.lnu.research_service_platform.service.adaptation.effectors;
 
+import java.util.Collections;
 import java.util.List;
 
 import se.lnu.research_service_platform.service.auxiliary.Operation;
@@ -108,5 +109,9 @@ public class CacheEffector extends AbstractEffector {
 
     public ServiceDescription setOnlyService(String serviceName, String type, String op) {
         return compositeService.loadOnlyServiceIntoCache(serviceName, type, op).get(0);
+    }
+
+    public void addService(ServiceDescription sd, String op) {
+        compositeService.getCache().add(sd.getServiceType(), op, Collections.singletonList(sd));
     }
 }

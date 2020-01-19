@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <inputProfile>
-    <maxSteps>100</maxSteps>
+    <maxSteps>6000</maxSteps>
     <qosRequirement>CostQoS</qosRequirement>
     <variables>
         <variable>

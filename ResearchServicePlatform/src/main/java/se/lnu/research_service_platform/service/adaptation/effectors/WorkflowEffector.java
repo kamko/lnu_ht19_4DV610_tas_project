@@ -1,5 +1,8 @@
 package se.lnu.research_service_platform.service.adaptation.effectors;
 
+import java.util.List;
+
+import se.lnu.research_service_platform.service.auxiliary.Operation;
 import se.lnu.research_service_platform.service.auxiliary.ServiceDescription;
 import se.lnu.research_service_platform.service.composite.CompositeService;
 
@@ -95,5 +98,13 @@ public class WorkflowEffector extends AbstractEffector {
 
     public void setService(String name, String type, String op) {
         cacheEffector.setOnlyService(name, type, op);
+    }
+
+    public void addServices(List<ServiceDescription> services) {
+        for (ServiceDescription sd : services) {
+            for (Operation op : sd.getOperationList()) {
+                cacheEffector.addService(sd, op.getOpName());
+            }
+        }
     }
 }
