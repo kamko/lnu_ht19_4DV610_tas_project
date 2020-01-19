@@ -33,4 +33,8 @@ public class ConfigurationEffector extends AbstractEffector {
     public void setMaxRetryAttempts(int maxRetryAttempts) {
         compositeService.getConfiguration().maxRetryAttempts = maxRetryAttempts;
     }
+
+    public void addAnotherAttempt() {
+        compositeService.getConfiguration().maxRetryAttempts++;
+    }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,7 +210,14 @@ public abstract class CompositeService extends AbstractService {
      * @return list of service descriptions with the same service type and operation name
      */
     public List<ServiceDescription> lookupService(String serviceType, String opName) {
-        // if it's first time requesting this service - load all into cache
+        // try from cache
+        List<ServiceDescription> services = cache.get(serviceType, opName);
+        if (services != null && !services.isEmpty()) {
+            return services;
+        }
+
+        // if nothing in cache
+        // and it's first time requesting this service - load all into cache
         if (!cacheHistory.wasAlreadyRequested(serviceType, opName)) {
             reloadServicesCache(serviceType, opName);
         }
@@ -226,6 +234,19 @@ public abstract class CompositeService extends AbstractService {
         cache.add(serviceType, opName, serviceDescriptions);
 
         return serviceDescriptions;
+    }
+
+    public List<ServiceDescription> loadOnlyServiceIntoCache(String name, String type, String op) {
+        List<ServiceDescription> services = reloadServicesCache(type, op);
+        clearCache();
+
+        List<ServiceDescription> singleServiceList = services.stream()
+                .filter(sd -> sd.getServiceName().equals(name))
+                .collect(Collectors.toList());
+
+        cache.add(type, op, singleServiceList);
+
+        return singleServiceList;
     }
 
     /**

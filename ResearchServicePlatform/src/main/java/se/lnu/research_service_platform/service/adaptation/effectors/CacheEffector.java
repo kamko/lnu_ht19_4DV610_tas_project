@@ -55,7 +55,7 @@ public class CacheEffector extends AbstractEffector {
      * Refresh the cache
      * all services will be removed.
      */
-    public void refreshCache() {
+    public void clearCache() {
         compositeService.clearCache();
     }
 
@@ -66,7 +66,7 @@ public class CacheEffector extends AbstractEffector {
      * @param serviceType the service type
      * @param opName      the operation name
      */
-    public void refreshCache(String serviceType, String opName) {
+    public void clearCache(String serviceType, String opName) {
         compositeService.getCache().remove(serviceType, opName);
         compositeService.reloadServicesCache(serviceType, opName);
     }
@@ -78,7 +78,7 @@ public class CacheEffector extends AbstractEffector {
      * @param opName      the operation name
      * @return a list of service descriptions after refreshing
      */
-    public List<ServiceDescription> refreshCache(ServiceDescription description, String opName) {
+    public List<ServiceDescription> clearCache(ServiceDescription description, String opName) {
         removeService(description, opName);
         return compositeService.reloadServicesCache(description.getServiceType(), opName);
     }
@@ -104,5 +104,9 @@ public class CacheEffector extends AbstractEffector {
      */
     public ServiceDescription getService(int registerID) {
         return compositeService.getCache().getServiceDescription(registerID);
+    }
+
+    public ServiceDescription setOnlyService(String serviceName, String type, String op) {
+        return compositeService.loadOnlyServiceIntoCache(serviceName, type, op).get(0);
     }
 }

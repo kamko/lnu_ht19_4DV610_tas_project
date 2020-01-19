@@ -51,7 +51,7 @@ public class WorkflowEffector extends AbstractEffector {
      * Clear the workflow cache
      */
     public void refreshAllServices() {
-        cacheEffector.refreshCache();
+        cacheEffector.clearCache();
     }
 
     /**
@@ -61,9 +61,8 @@ public class WorkflowEffector extends AbstractEffector {
      * @param opName      the operation name
      */
     public void refreshAllServices(String serviceType, String opName) {
-        cacheEffector.refreshCache(serviceType, opName);
+        cacheEffector.clearCache(serviceType, opName);
     }
-
 
     /**
      * Update the service description in the workflow cache
@@ -92,5 +91,9 @@ public class WorkflowEffector extends AbstractEffector {
      */
     public void stopRetrying() {
         compositeService.stopRetrying();
+    }
+
+    public void setService(String name, String type, String op) {
+        cacheEffector.setOnlyService(name, type, op);
     }
 }

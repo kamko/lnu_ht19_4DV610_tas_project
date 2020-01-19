@@ -10,8 +10,8 @@ package se.lnu.tas_system.tas.adaptation;
  */
 public interface AdaptationEngine {
 
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
 
 }
