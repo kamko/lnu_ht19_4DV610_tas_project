@@ -42,6 +42,7 @@ public class T2Analyzer implements Analyzer {
 
     @Override
     public List<Plan> analyzeConfigurationChange() {
+        log.info("Loading services with best utility expectations.");
         return Arrays.asList(
                 PlanGenerator.reloadDefaults(),
                 PlanGenerator.loadSpecificServices(findServicesWithBestUtility())
