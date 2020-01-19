@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <inputProfile>
-    <maxSteps>500</maxSteps>
+    <maxSteps>5000</maxSteps>
     <qosRequirement>ReliabilityQoS</qosRequirement>
     <variables>
         <variable>

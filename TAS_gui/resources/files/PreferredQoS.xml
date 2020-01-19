@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <inputProfile>
-    <maxSteps>1000</maxSteps>
+    <maxSteps>5000</maxSteps>
     <qosRequirement>PreferencesQoS</qosRequirement>
     <variables>
         <variable>
